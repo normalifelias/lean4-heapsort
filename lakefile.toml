@@ -1,0 +1,10 @@
+name = "lean4-heapsort"
+version = "0.1.0"
+defaultTargets = ["lean4-heapsort"]
+
+[[lean_lib]]
+name = "Lean4Heapsort"
+
+[[lean_exe]]
+name = "lean4-heapsort"
+root = "Main"
