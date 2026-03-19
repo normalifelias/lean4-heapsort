@@ -1,4 +1,4 @@
-import Lean4Heapsort
+import Lean4Heapsort.Basic
 
 def main : IO Unit :=
-  IO.println s!"Hello World!"
+  runBenchmark 100000 10
