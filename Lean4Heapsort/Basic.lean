@@ -85,6 +85,7 @@ def runBenchmark (n runs : Nat) : IO Unit := do
     let before ← Std.Time.Timestamp.now
     discard <| myHeapSortIO shuffled (· ≤ ·)
     let duration ← before.since
-    IO.println s!"{duration.toMilliseconds}ms"
+    IO.print s!"{duration.toMilliseconds}ms "
     results := results.push duration.toMilliseconds.toInt.toNat
+  IO.println s!"\nAverage: {results.sum / runs}ms"
   return ()
