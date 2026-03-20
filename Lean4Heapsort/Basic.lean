@@ -7,24 +7,19 @@ def lCh := (· * 2 + 1)
 @[inline]
 def rCh := (· * 2 + 2)
 
-@[inline]
-def Array.swap! [Inhabited α] (xs : Array α) (i j : Nat) : Array α := --swaps without index safety
-  let tmp := xs[i]!
-  (xs.set! i xs[j]!).set! j tmp
-
 @[specialize le]
 partial def siftDown [Inhabited α] (le : α → α → Bool) (heap : Array α) (i heapsize : Nat): Array α := --starts a a certain node and works its way down, resoring the max-heap property
-  if (lCh i < heapsize) ∧ (le heap[i]! heap[lCh i]!) then --left child?
-    if (rCh i < heapsize) ∧ (le heap[i]! heap[rCh i]!) then --right child?
-      if le heap[lCh i]! heap[rCh i]! then --both exist and don't fit => which is larger?
-        siftDown le (heap.swap! (rCh i) i) (rCh i) heapsize --right one is largest
+  if (lCh i < heapsize) ∧ (le (heap[i]'sorry) (heap[lCh i]'sorry)) then --left child?
+    if (rCh i < heapsize) ∧ (le (heap[i]'sorry) (heap[rCh i]'sorry)) then --right child?
+      if le (heap[lCh i]'sorry) (heap[rCh i]'sorry) then --both exist and don't fit => which is larger?
+        siftDown le (heap.swap (rCh i) i sorry sorry) (rCh i) heapsize --right one is largest
       else
-        siftDown le (heap.swap! (lCh i) i) (lCh i) heapsize --left one is largest
+        siftDown le (heap.swap (lCh i) i sorry sorry) (lCh i) heapsize --left one is largest
     else
-      siftDown le (heap.swap! (lCh i) i) (lCh i) heapsize --right child does not exist, but left child does not fit
+      siftDown le (heap.swap (lCh i) i sorry sorry) (lCh i) heapsize --right child does not exist, but left child does not fit
   else
-    if (rCh i < heapsize) ∧ (le heap[i]! heap[rCh i]!) then --right child?
-      siftDown le (heap.swap! (rCh i) i) (rCh i) heapsize ----left child does not exist, but right child does not fit
+    if (rCh i < heapsize) ∧ (le (heap[i]'sorry) (heap[rCh i]'sorry)) then --right child?
+      siftDown le (heap.swap (rCh i) i sorry sorry) (rCh i) heapsize ----left child does not exist, but right child does not fit
     else
       heap --no children or both fit
 
@@ -43,7 +38,7 @@ def createHeap [Inhabited α] (le : α → α → Bool) (xs : Array α) : Array 
 def mHS_helper [Inhabited α] (le : α → α → Bool) (heap : Array α) (heapsize : Nat): Array α := --sorts a heap by extracting the max element and moving it to the end of the array
   if heapsize = 0 then heap --finished => return
   else
-    mHS_helper le (siftDown le (heap.swap! 0 (heapsize - 1)) 0 (heapsize-1)) (heapsize - 1) --swap with last element of heap, make the heap one element samller and restore max-heap property
+    mHS_helper le (siftDown le (heap.swap 0 (heapsize - 1) sorry sorry) 0 (heapsize-1)) (heapsize - 1) --swap with last element of heap, make the heap one element samller and restore max-heap property
 
 @[inline]
 def myHeapSort [Inhabited α] (xs : Array α) (le : α → α → Bool): Array α := --creates heap and calls helper to sort
@@ -56,8 +51,6 @@ def le_Nat (x y : Nat): Bool := x ≤ y
 
 
 --set_option trace.compiler.ir.result true
-def a (arr : Array Nat) :=
-  (inline myHeapSort arr (· ≤ ·))
 
 @[noinline]
 def myHeapSortIO [Inhabited α] (xs : Array α) (le : α → α → Bool) : IO (Array α) := do --creates heap and calls helper to sort
