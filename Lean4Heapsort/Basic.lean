@@ -80,5 +80,5 @@ def runBenchmark (n runs : Nat) (comp : Nat → Nat → Bool) (arrgen : Nat → 
     let duration ← before.since
     IO.print s!"{duration.toMilliseconds}ms "
     results := results.push duration.toMilliseconds.toInt.toNat
-  IO.println s!"\nAverage: {results.sum / runs}ms"
+  IO.println s!"\nAverage: {results.sum / runs}ms (w/o first run: {(results.sum - results[0]!) / (runs - 1)}ms)"
   return ()
