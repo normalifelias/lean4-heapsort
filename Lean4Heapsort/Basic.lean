@@ -7,54 +7,54 @@ def lCh := (· * 2 + 1)
 @[inline]
 def rCh := (· * 2 + 2)
 
-@[specialize le]
-partial def siftDown [Inhabited α] (le : α → α → Bool) (heap : Array α) (i heapsize : Nat): Array α := --starts a a certain node and works its way down, resoring the max-heap property
-  if (lCh i < heapsize) ∧ (le (heap[i]'sorry) (heap[lCh i]'sorry)) then --left child?
-    if (rCh i < heapsize) ∧ (le (heap[i]'sorry) (heap[rCh i]'sorry)) then --right child?
-      if le (heap[lCh i]'sorry) (heap[rCh i]'sorry) then --both exist and don't fit => which is larger?
-        siftDown le (heap.swap (rCh i) i sorry sorry) (rCh i) heapsize --right one is largest
+@[specialize lt]
+partial def siftDown [Inhabited α] (lt : α → α → Bool) (heap : Array α) (i heapsize : Nat): Array α := --starts a a certain node and works its way down, resoring the max-heap property
+  if (lCh i < heapsize) ∧ (lt (heap[i]'sorry) (heap[lCh i]'sorry)) then --left child?
+    if (rCh i < heapsize) ∧ (lt (heap[i]'sorry) (heap[rCh i]'sorry)) then --right child?
+      if lt (heap[lCh i]'sorry) (heap[rCh i]'sorry) then --both exist and don't fit => which is larger?
+        siftDown lt (heap.swap (rCh i) i sorry sorry) (rCh i) heapsize --right one is largest
       else
-        siftDown le (heap.swap (lCh i) i sorry sorry) (lCh i) heapsize --left one is largest
+        siftDown lt (heap.swap (lCh i) i sorry sorry) (lCh i) heapsize --left one is largest
     else
-      siftDown le (heap.swap (lCh i) i sorry sorry) (lCh i) heapsize --right child does not exist, but left child does not fit
+      siftDown lt (heap.swap (lCh i) i sorry sorry) (lCh i) heapsize --right child does not exist, but left child does not fit
   else
-    if (rCh i < heapsize) ∧ (le (heap[i]'sorry) (heap[rCh i]'sorry)) then --right child?
-      siftDown le (heap.swap (rCh i) i sorry sorry) (rCh i) heapsize ----left child does not exist, but right child does not fit
+    if (rCh i < heapsize) ∧ (lt (heap[i]'sorry) (heap[rCh i]'sorry)) then --right child?
+      siftDown lt (heap.swap (rCh i) i sorry sorry) (rCh i) heapsize ----left child does not exist, but right child does not fit
     else
       heap --no children or both fit
 
-@[specialize]
-def cH_helper [Inhabited α] (le : α → α → Bool) (xs : Array α) (i : Nat): Array α := --works its way up the heap restoring max-heap property downwards
+@[specialize lt]
+def cH_helper [Inhabited α] (lt : α → α → Bool) (xs : Array α) (i : Nat): Array α := --works its way up the heap restoring max-heap property downwards
   if i = 0 then --finished?
-    siftDown le xs 0 xs.size --one last time
+    siftDown lt xs 0 xs.size --one last time
   else
-    cH_helper le (siftDown le xs i xs.size) (i-1) --do it for every node
+    cH_helper lt (siftDown lt xs i xs.size) (i-1) --do it for every node
 
 @[inline]
-def createHeap [Inhabited α] (le : α → α → Bool) (xs : Array α) : Array α := --calls helper to build heap
-  cH_helper le xs (xs.size/2) --can start at half, because the other half is leaves
+def createHeap [Inhabited α] (lt : α → α → Bool) (xs : Array α) : Array α := --calls helper to build heap
+  cH_helper lt xs (xs.size/2) --can start at half, because the other half is leaves
 
-@[specialize le]
-def mHS_helper [Inhabited α] (le : α → α → Bool) (heap : Array α) (heapsize : Nat): Array α := --sorts a heap by extracting the max element and moving it to the end of the array
+@[specialize lt]
+def mHS_helper [Inhabited α] (lt : α → α → Bool) (heap : Array α) (heapsize : Nat): Array α := --sorts a heap by extracting the max element and moving it to the end of the array
   if heapsize = 0 then heap --finished => return
   else
-    mHS_helper le (siftDown le (heap.swap 0 (heapsize - 1) sorry sorry) 0 (heapsize-1)) (heapsize - 1) --swap with last element of heap, make the heap one element samller and restore max-heap property
+    mHS_helper lt (siftDown lt (heap.swap 0 (heapsize - 1) sorry sorry) 0 (heapsize-1)) (heapsize - 1) --swap with last element of heap, make the heap one element samller and restore max-heap property
 
 @[inline]
-def myHeapSort [Inhabited α] (xs : Array α) (le : α → α → Bool): Array α := --creates heap and calls helper to sort
-  mHS_helper le (createHeap le xs) xs.size
+def myHeapSort [Inhabited α] (xs : Array α) (lt : α → α → Bool): Array α := --creates heap and calls helper to sort
+  mHS_helper lt (createHeap lt xs) xs.size
 
 def testValues2 : Array Nat := #[47, 13, 82, 6, 91, 34, 57, 23, 76, 41, 88, 3, 65, 29, 54, 17, 72, 39, 84, 11, 63, 28, 95, 42, 7, 56, 31, 78, 19, 67, 44, 90, 25, 58, 14, 83, 37, 62, 9, 71, 48, 26, 93, 15, 52, 38, 77, 22, 69, 4, 86, 33, 61, 18, 45, 79, 12, 57, 35, 81, 24, 68, 43, 96, 8, 53, 27, 74, 16, 89, 41, 64, 30, 55, 20, 73, 46, 85, 10, 60, 36, 92, 21, 49, 66, 32, 75, 5, 87, 40, 59, 28, 70, 38, 94, 50, 80, 2, 97, 44]
-def le_Nat (x y : Nat): Bool := x ≤ y
---#eval myHeapSort testValues2 le_Nat
+def lt_Nat (x y : Nat): Bool := x < y
+--#eval! myHeapSort testValues2 lt_Nat
 
 
 
 --set_option trace.compiler.ir.result true
 
 @[noinline]
-def myHeapSortIO [Inhabited α] (xs : Array α) (le : α → α → Bool) : IO (Array α) := do --creates heap and calls helper to sort
-  return myHeapSort xs le
+def myHeapSortIO [Inhabited α] (xs : Array α) (lt : α → α → Bool) : IO (Array α) := do --creates heap and calls helper to sort
+  return myHeapSort xs lt
 
 private def shuffleIt {α : Type u} (xs : Array α) (gen : StdGen) : Array α :=
   go xs gen 0
@@ -67,16 +67,16 @@ where
     else
       xs
 
-def runBenchmark (n runs : Nat) : IO Unit := do
-  let seed := UInt64.toNat (ByteArray.toUInt64LE! (← IO.getRandomBytes 8))
-  let gen := mkStdGen seed
-  let arr := Array.range n
-  let shuffled := shuffleIt arr gen
+def runBenchmark (n runs : Nat) (comp : Nat → Nat → Bool) (arrgen : Nat → Array Nat): IO Unit := do
+  let arr := arrgen n
   IO.println s!"Doing {runs} runs on {n} elements:"
   let mut results : Array Nat := Array.emptyWithCapacity runs
   for _ in 0...runs do
+    let seed := UInt64.toNat (ByteArray.toUInt64LE! (← IO.getRandomBytes 8))
+    let gen := mkStdGen seed
+    let shuffled := shuffleIt arr gen
     let before ← Std.Time.Timestamp.now
-    discard <| myHeapSortIO shuffled (· ≤ ·)
+    discard <| myHeapSortIO shuffled comp
     let duration ← before.since
     IO.print s!"{duration.toMilliseconds}ms "
     results := results.push duration.toMilliseconds.toInt.toNat
