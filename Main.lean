@@ -1,7 +1,7 @@
 import Lean4Heapsort.Basic
 
-def main : IO Unit := do
-  IO.println "WARMUP"
+def main : IO Unit := IO.println ""
+  /-IO.println "WARMUP"
   runBenchmark 400000 10 (· < ·) (Array.replicate · 42)
 
   IO.println "\n\nSHUFFLED RANGE"
@@ -18,4 +18,4 @@ def main : IO Unit := do
   runBenchmark 400000 50 (· < ·) (Array.replicate · 42)
 
   IO.println "le"
-  runBenchmark 400000 50 (· ≤ ·) (Array.replicate · 42)
+  runBenchmark 400000 50 (· ≤ ·) (Array.replicate · 42)-/
